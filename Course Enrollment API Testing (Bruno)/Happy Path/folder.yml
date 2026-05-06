@@ -1,0 +1,7 @@
+info:
+  name: Happy Path
+  type: folder
+  seq: 2
+
+request:
+  auth: inherit

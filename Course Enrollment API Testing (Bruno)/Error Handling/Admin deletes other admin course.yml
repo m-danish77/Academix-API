@@ -1,0 +1,17 @@
+info:
+  name: Admin deletes other admin course
+  type: http
+  seq: 2
+
+http:
+  method: DELETE
+  url: "{{base_url}}/api/courses/69fb32a5a542675ea0d7237b"
+  auth:
+    type: bearer
+    token: "{{token}}"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

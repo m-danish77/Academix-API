@@ -1,10 +1,10 @@
 info:
-  name: Update Course
+  name: Instructor can't enrolled in its own course
   type: http
-  seq: 4
+  seq: 3
 
 http:
-  method: PUT
+  method: POST
   url: ""
   auth: inherit
 

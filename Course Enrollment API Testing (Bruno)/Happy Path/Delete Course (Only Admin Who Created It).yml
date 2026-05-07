@@ -1,5 +1,5 @@
 info:
-  name: Delete Course
+  name: Delete Course (Only Admin Who Created It)
   type: http
   seq: 3
 

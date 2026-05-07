@@ -5,8 +5,19 @@ info:
 
 http:
   method: POST
-  url: ""
-  auth: inherit
+  url: "{{base_url}}/api/courses"
+  body:
+    type: json
+    data: |-
+      {
+         "title": "Advanced Js",
+         "description": "Learn Js in depth",
+         "maxCapacity": 9,
+         "price": 500
+      }
+  auth:
+    type: bearer
+    token: "{{token}}"
 
 settings:
   encodeUrl: true

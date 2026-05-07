@@ -15,6 +15,21 @@ http:
       }
   auth: inherit
 
+runtime:
+  scripts:
+    - type: after-response
+      code: |-
+        // Parse the response body
+        const responseData = res.getBody();
+
+        // Access the token from the top level of your object
+        if (responseData.token) {
+            bru.setEnvVar("token", responseData.token);
+            console.log("Success: Token has been updated in the environment.");
+        } else {
+            console.warn("Script Warning: No token found in the response body.");
+        }
+
 settings:
   encodeUrl: true
   timeout: 0

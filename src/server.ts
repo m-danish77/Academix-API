@@ -5,6 +5,7 @@ import express, { json, Request, Response } from "express";
 import connectDB from "./configs/mongoose.js";
 import authRouter from "./routes/authRouter.js";
 import courseRouter from "./routes/courseRouter.js";
+import enrollmentRouter from "./routes/enrollmentRouter.js";
 
 const app = express();
 
@@ -13,6 +14,7 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use("/api", authRouter);
 app.use("/api", courseRouter);
+app.use("/api", enrollmentRouter);
 
 app.use((req: Request, res: Response) => {
   res.status(404).send("<h1><center>404 Page Not Found</center></h1>");

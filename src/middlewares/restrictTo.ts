@@ -5,10 +5,13 @@ const restrictTo = async (req: Request, res: Response, next: NextFunction) => {
     if (req.user && req.user.role == "admin") {
       next();
     } else {
-      res.status(403).json({ message: "Access Denied. Admins Only." });
+      const err: any = new Error("Access Denied. Admins Only.");
+      err.status = 403;
+      next(err);
     }
   } catch (e) {
-    res.status(400).json({ message: (e as Error).message });
+    const err: any = e;
+    next(err);
   }
 };
 

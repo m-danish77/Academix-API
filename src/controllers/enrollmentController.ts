@@ -1,26 +1,30 @@
-import { Request, Response } from "express";
+import { Request, Response, NextFunction } from "express";
 import Course from "../models/Course.js";
 import Enrollment from "../models/Enrollment.js";
-const postEnroll = async (req: Request, res: Response) => {
+const postEnroll = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { courseId } = req.params;
     const studentId = req.user?._id;
 
     const course = await Course.findById(courseId);
     if (!course) {
-      return res.status(404).json({ message: "This course does'nt exist." });
+      const err: any = new Error("This course does'nt exist.");
+      err.status = 404;
+      return next(err);
     }
 
     if (!studentId) {
-      return res
-        .status(401)
-        .json({ message: "Unauthorized: You are not loggedIn." });
+      const err: any = new Error("Unauthorized: You are not loggedIn.");
+      err.status = 401;
+      return next(err);
     }
 
     if (studentId.toString() === course.instructor.toString()) {
-      return res
-        .status(400)
-        .json({ message: "Instructor can't enrolled in its own course." });
+      const err: any = new Error(
+        "Instructor can't enrolled in its own course..",
+      );
+      err.status = 400;
+      return next(err);
     }
 
     const existingEnrollment = await Enrollment.findOne({
@@ -29,18 +33,18 @@ const postEnroll = async (req: Request, res: Response) => {
     });
 
     if (existingEnrollment) {
-      return res
-        .status(400)
-        .json({ message: "You are already enrolled in this course." });
+      const err: any = new Error("You are already enrolled in this course.");
+      err.status = 400;
+      return next(err);
     }
 
     const totalEnrolledStudents = await Enrollment.countDocuments({
       courseId: courseId as any,
     });
     if (totalEnrolledStudents >= course.maxCapacity) {
-      return res
-        .status(400)
-        .json({ message: "The course enrollment if full." });
+      const err: any = new Error("The course enrollment if full.");
+      err.status = 400;
+      return next(err);
     }
 
     const studentIsEnrolled = await Enrollment.create({
@@ -53,10 +57,59 @@ const postEnroll = async (req: Request, res: Response) => {
       data: studentIsEnrolled,
     });
   } catch (e) {
-    res.status(400).json({ message: (e as Error).message });
+    next(e);
+  }
+};
+
+const getSpecificStudentCourses = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const studentId = req.user?._id;
+    if (!studentId) {
+      const err: any = new Error("Unauthorized: You are not loggedIn.");
+      err.status = 401;
+      return next(err);
+    }
+
+    // First we find the student name by studentId, then course title and description by courseId, we also want instructor name instead of its id so we use nested populate.
+    const allCourses = await Enrollment.find({ studentId: studentId })
+      .populate("studentId", "name")
+      .populate({
+        path: "courseId",
+        select: "title description", // Fields to get from Course
+        populate: {
+          path: "instructor",
+          select: "name", // Fields to get from the Instructor/User model
+        },
+      });
+
+    res.status(200).json(allCourses);
+  } catch (e) {
+    return next(e);
+  }
+};
+
+const getSpecificCourseEnrolledStudents = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const { courseId } = req.params;
+    const courseStudents = await Enrollment.find({
+      courseId: `${courseId}`,
+    }).populate("studentId", "name email");
+    res.status(200).json(courseStudents);
+  } catch (e) {
+    return next(e);
   }
 };
 
 export default {
   postEnroll,
+  getSpecificStudentCourses,
+  getSpecificCourseEnrolledStudents,
 };

@@ -2,14 +2,20 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
 import User from "../models/User.js";
-import { Request, Response } from "express";
+import { Request, Response, NextFunction } from "express";
 
-const postRegister = async (req: Request, res: Response) => {
+const postRegister = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
   try {
     const { name, email, password, role } = req.body;
     const user = await User.findOne({ email: email });
     if (user) {
-      return res.status(400).json({ message: "User already exists." });
+      const err: any = new Error("User already exists.");
+      err.status = 400;
+      return next(err);
     }
 
     const newUser = await User.create({
@@ -25,16 +31,19 @@ const postRegister = async (req: Request, res: Response) => {
 
     res.status(201).json(userResponse);
   } catch (e) {
-    res.status(400).json({ message: (e as Error).message });
+    const err: any = e;
+    return next(err);
   }
 };
 
-const postLogin = async (req: Request, res: Response) => {
+const postLogin = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { email, password } = req.body;
     const user = await User.findOne({ email: email }).select("+password");
     if (!user) {
-      return res.status(400).json({ message: "Incorrect Email and Password" });
+      const err: any = new Error("Incorrect Email and Password");
+      err.status = 400;
+      return next(err);
     }
 
     const matchPassword = await bcrypt.compare(
@@ -42,7 +51,9 @@ const postLogin = async (req: Request, res: Response) => {
       user.password as string,
     );
     if (!matchPassword) {
-      return res.status(400).json({ message: "Incorrect Email and Password" });
+      const err: any = new Error("Incorrect Email and Password");
+      err.status = 400;
+      return next(err);
     }
 
     const token = jwt.sign(
@@ -63,7 +74,8 @@ const postLogin = async (req: Request, res: Response) => {
       },
     });
   } catch (e) {
-    res.status(400).json({ message: (e as Error).message });
+    const err: any = e;
+    return next(err);
   }
 };
 

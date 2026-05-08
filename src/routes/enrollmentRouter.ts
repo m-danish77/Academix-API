@@ -11,4 +11,18 @@ enrollmentRouter.post(
   enrollmentController.postEnroll,
 );
 
+enrollmentRouter.get(
+  "/my-courses",
+  protect,
+  enrollmentController.getSpecificStudentCourses,
+);
+
+// We are showing to the admin that for a specific course which students are enrolled in this course and their non-sensitive data.
+enrollmentRouter.get(
+  "/course/:courseId/students",
+  protect,
+  restrictTo,
+  enrollmentController.getSpecificCourseEnrolledStudents,
+);
+
 export default enrollmentRouter;

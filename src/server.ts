@@ -1,5 +1,5 @@
 // External Modules
-import express, { json, Request, Response } from "express";
+import express, { json, Request, Response, NextFunction } from "express";
 
 // Local Modules
 import connectDB from "./configs/mongoose.js";
@@ -16,8 +16,20 @@ app.use("/api", authRouter);
 app.use("/api", courseRouter);
 app.use("/api", enrollmentRouter);
 
-app.use((req: Request, res: Response) => {
-  res.status(404).send("<h1><center>404 Page Not Found</center></h1>");
+app.use((req: Request, res: Response, next: NextFunction) => {
+  const err: any = new Error("404 Page Not Found");
+  err.status = 404;
+  next(err);
+});
+
+app.use((err: any, req: Request, res: Response, next: NextFunction) => {
+  const status = err.status || 500;
+  const message = err.message || "Something went wrong with server.";
+
+  res.status(status).json({
+    success: false,
+    message: message,
+  });
 });
 
 const port = process.env.PORT || 3000;

@@ -1,23 +1,27 @@
-import { Request, Response } from "express";
+import { Request, Response, NextFunction } from "express";
 import Course from "../models/Course.js";
 
-const getCourses = async (req: Request, res: Response) => {
+const getCourses = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const allCourses = await Course.find().populate("instructor", "name email");
     res.status(200).json(allCourses);
   } catch (e) {
-    res.status(400).json({ message: (e as Error).message });
+    next(e);
   }
 };
 
-const createCourse = async (req: Request, res: Response) => {
+const createCourse = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
   try {
     const { title, description, maxCapacity, price } = req.body;
 
     if (!req.user || !req.user._id) {
-      return res
-        .status(401)
-        .json({ message: "Unauthorized: Instructor ID required" });
+      const err: any = new Error("Unauthorized: Instructor ID required");
+      err.status = 401;
+      return next(err);
     }
 
     const newCourse = await Course.create({
@@ -30,11 +34,15 @@ const createCourse = async (req: Request, res: Response) => {
 
     res.status(201).json(newCourse);
   } catch (e) {
-    res.status(400).json({ message: (e as Error).message });
+    next(e);
   }
 };
 
-const updateCourse = async (req: Request, res: Response) => {
+const updateCourse = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
   try {
     const { title, description, maxCapacity, price } = req.body;
     const courseId = req.params.courseId;
@@ -42,21 +50,24 @@ const updateCourse = async (req: Request, res: Response) => {
     const course = await Course.findById(courseId);
 
     if (!course) {
-      return res.status(401).json({ message: "Course Not Found" });
+      const err: any = new Error("Course Not Found");
+      err.status = 401;
+      return next(err);
     }
 
     if (!req.user || !req.user._id) {
-      return res
-        .status(401)
-        .json({ message: "Unauthorized: Instructor ID required" });
+      const err: any = new Error("Unauthorized: Instructor ID required");
+      err.status = 401;
+      return next(err);
     }
 
     // We converted both of them to strings because two objects can never equal
     if (req.user._id.toString() !== course.instructor.toString()) {
-      return res.status(401).json({
-        message:
-          "You don't created this course. Only admin who created the course can update it.",
-      });
+      const err: any = new Error(
+        "You don't created this course. Only admin who created the course can update it.",
+      );
+      err.status = 401;
+      return next(err);
     }
     const updateCourse = await Course.findByIdAndUpdate(
       courseId,
@@ -71,40 +82,46 @@ const updateCourse = async (req: Request, res: Response) => {
 
     res.status(201).json(updateCourse);
   } catch (e) {
-    res.status(400).json({ message: (e as Error).message });
+    next(e);
   }
 };
 
-const deleteCourse = async (req: Request, res: Response) => {
+const deleteCourse = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
   try {
     const courseId = req.params.courseId;
 
     const course = await Course.findById(courseId);
 
     if (!course) {
-      return res.status(401).json({ message: "Course Not Found" });
+      const err: any = new Error("Course Not Found");
+      err.status = 401;
+      return next(err);
     }
 
     if (!req.user || !req.user._id) {
-      return res
-        .status(401)
-        .json({ message: "Unauthorized: Instructor ID required" });
+      const err: any = new Error("Unauthorized: Instructor ID required");
+      err.status = 401;
+      return next(err);
     }
 
     if (req.user._id.toString() !== course.instructor.toString()) {
-      return res.status(401).json({
-        message:
-          "You don't created this course. Only admin who created this course can delete it.",
-      });
+      const err: any = new Error(
+        "You don't created this course. Only admin who created this course can delete it.",
+      );
+      err.status = 401;
+      return next(err);
     }
 
     const deleteCourse = await Course.findByIdAndDelete(courseId);
-
     res
       .status(201)
       .json({ message: "Course Deleted", deleteCourse: deleteCourse });
   } catch (e) {
-    res.status(400).json({ message: (e as Error).message });
+    next(e);
   }
 };
 

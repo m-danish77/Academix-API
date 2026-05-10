@@ -105,4 +105,5 @@ I used **Bruno** for testing because of its lightweight, Git-friendly approach t
 ### 💡 Final Developer Note
 This project was a significant step in moving from "Basic CRUD" to "System Engineering." It taught me the importance of global error handling and why TypeScript is essential for maintaining large-scale backend architectures.
 
+I am studing and learning to use Zod and will implement this feature in the near future to add the validation in my backend Project. I will delete this line and will update the README.md file in future when i will implement the Zod in this Project.
 ```

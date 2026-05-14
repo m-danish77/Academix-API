@@ -7,6 +7,7 @@ import express, {
   Application,
 } from "express";
 import helmet from "helmet";
+import cors from "cors";
 
 // Local Modules
 import connectDB from "./configs/mongoose.js";
@@ -15,6 +16,7 @@ import courseRouter from "./routes/courseRouter.js";
 import enrollmentRouter from "./routes/enrollmentRouter.js";
 
 const app: Application = express();
+const port = process.env.PORT || 3000;
 
 /**
  * SECURITY MIDDLEWARE: Helmet.js
@@ -25,6 +27,32 @@ const app: Application = express();
  * and setting secure HTTP headers to mitigate XSS, Clickjacking, and MIME-sniffing.
  */
 app.use(helmet());
+
+/**
+ * SECURITY: CORS (Cross-Origin Resource Sharing)
+ * Gatekeeper for browser requests. Restricts API access strictly to trusted
+ * frontends, preventing unauthorized cross-origin data leaks and script execution.
+ */
+
+// Only request comming from these urls are allowed
+const allowedOrigins = ["http://localhost:3000", "https://yourfrontend.com"];
+
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      // origin comes empty when request comes from mobile application or other than browser like Bruno we want to allow these
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Access denied by CORS security policy"));
+      }
+    },
+    /*
+      By default, CORS blocks the transmission of sensitive data across different domains. Setting credentials: true allows your frontend to securely send HTTP cookies, JSON Web Tokens (JWTs) in the authorization header, or session details along with the request. Without this, your authentication system will fail across origins.
+    */
+    credentials: true,
+  }),
+);
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -49,7 +77,6 @@ app.use((err: any, req: Request, res: Response, next: NextFunction) => {
   });
 });
 
-const port = process.env.PORT || 3000;
 const startServer = async () => {
   await connectDB();
   app.listen(port, () => {

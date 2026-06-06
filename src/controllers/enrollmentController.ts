@@ -27,6 +27,7 @@ const postEnroll = async (req: Request, res: Response, next: NextFunction) => {
       return next(err);
     }
 
+    // Checking if the student is already enrolled in the course
     const existingEnrollment = await Enrollment.findOne({
       studentId: studentId,
       courseId: courseId as any,
@@ -38,6 +39,7 @@ const postEnroll = async (req: Request, res: Response, next: NextFunction) => {
       return next(err);
     }
 
+    // Checking that is'nt the total seats for enrollment of specific course is full
     const totalEnrolledStudents = await Enrollment.countDocuments({
       courseId: courseId as any,
     });

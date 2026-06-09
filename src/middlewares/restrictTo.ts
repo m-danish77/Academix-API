@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 
-const restrictTo = async (req: Request, res: Response, next: NextFunction) => {
+const restrictTo = (req: Request, res: Response, next: NextFunction) => {
   try {
     if (req.user && req.user.role == "admin") {
       next();

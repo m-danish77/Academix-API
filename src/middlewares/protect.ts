@@ -30,11 +30,11 @@ const protect = async (req: Request, res: Response, next: NextFunction) => {
     }
 
     // 3. Verify the token
-    // @ts-ignore
+
     const decoded = jwt.verify(
       token,
       process.env.JWT_SECRET as string,
-    ) as unknown as MyToken;
+    ) as MyToken;
 
     // 4. Check if the user still exists in the database
     const currentUser = await User.findById(decoded.userId);

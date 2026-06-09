@@ -14,7 +14,7 @@ export const createCourseSchema = z.object({
       .int("Capacity must be a whole integer number")
       .positive("Capacity must be at least 1 student"),
     price: z
-      .number({ error: "Price is required" })
+      .number({ error: "Price is required and should be a number" })
       .nonnegative("Price cannot be a negative value"),
   }),
 });

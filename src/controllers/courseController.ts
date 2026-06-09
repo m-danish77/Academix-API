@@ -80,7 +80,7 @@ const updateCourse = async (
       { returnDocument: "after" },
     );
 
-    res.status(201).json(updateCourse);
+    res.status(200).json(updateCourse);
   } catch (e) {
     next(e);
   }
@@ -118,7 +118,7 @@ const deleteCourse = async (
 
     const deleteCourse = await Course.findByIdAndDelete(courseId);
     res
-      .status(201)
+      .status(204)
       .json({ message: "Course Deleted", deleteCourse: deleteCourse });
   } catch (e) {
     next(e);

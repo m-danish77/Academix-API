@@ -57,6 +57,16 @@ app.use(
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// If someone hits the base_url it should'nt go to the 404 handler
+app.get("/", (req: Request, res: Response) => {
+  res.status(200).json({
+    success: true,
+    message: "Welcome to the Course & Enrollment Management API",
+    status: "Healthy",
+    timestamp: new Date().toISOString(),
+  });
+});
+
 app.use("/api", authRouter);
 app.use("/api", courseRouter);
 app.use("/api", enrollmentRouter);

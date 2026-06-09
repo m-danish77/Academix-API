@@ -59,6 +59,7 @@ One of the core challenges of this project was managing the "Many-to-Many" relat
 * `GET /api/courses` - Browse all courses (Public)
 * `POST /api/courses` - Create a course (Admin only)
 * `PUT /api/courses/:courseId` - Update course (Owner only)
+* `DELETE /api/courses/:courseId` - Delete course (Owner only)
 
 ### Enrollments
 

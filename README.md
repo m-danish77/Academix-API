@@ -11,6 +11,12 @@ A robust, production-ready backend system built with **Node.js**, **Express**, a
 * **Resource Ownership:** Logic-level protection ensuring only the creator of a course can modify or delete it.
 * **Security Headers:** Implemented `Helmet` and `CORS` for protection against common web vulnerabilities.
 
+### 🛡️ Robust Request Validation (Zod)
+
+* **Fail-Fast Middleware:** Centralized request validation intercepting malformed `body`, `params`, and `query` data before hitting controllers.
+* **Granular Error Reporting:** Deeply integrated with the global error handler to map complex Zod issues into readable, field-specific feedback.
+* **DRY Schema Reusability:** Leveraged advanced schema features like `.shape.body.partial()` to automatically handle optional fields on update (`PUT`) operations.
+
 ### 📚 Course Management
 
 * Full CRUD functionality for courses.
@@ -33,6 +39,7 @@ A robust, production-ready backend system built with **Node.js**, **Express**, a
 * **Runtime:** Node.js
 * **Framework:** Express.js
 * **Language:** TypeScript (Strict Mode)
+* **Data Validation:** Zod
 * **Database:** MongoDB via Mongoose
 * **Security:** JWT, Bcrypt, Helmet, CORS
 * **Testing:** Bruno
@@ -41,11 +48,12 @@ A robust, production-ready backend system built with **Node.js**, **Express**, a
 
 One of the core challenges of this project was managing the "Many-to-Many" relationship between Students and Courses. I implemented a **Bridge Model** (Enrollment) to handle this, governed by a multi-step validation pipeline:
 
-1. **Identity Verification:** Extract user context from JWT.
-2. **Existence Check:** Verify the course exists in the database.
-3. **Integrity Check:** Query the Enrollment collection for existing student-course pairs.
-4. **Resource Check:** Perform a `countDocuments` query to compare current enrollment numbers against `maxCapacity`.
-5. **Atomic Transaction:** Create the enrollment record only if all conditions are met.
+1. **Schema Validation:** Filter and verify incoming payload formats explicitly using strict Zod schemas.
+2. **Identity Verification:** Extract user context from JWT.
+3. **Existence Check:** Verify the course exists in the database.
+4. **Integrity Check:** Query the Enrollment collection for existing student-course pairs.
+5. **Resource Check:** Perform a `countDocuments` query to compare current enrollment numbers against `maxCapacity`.
+6. **Atomic Transaction:** Create the enrollment record only if all conditions are met.
 
 ## 🚦 API Endpoints (Snapshot)
 
@@ -75,36 +83,41 @@ git clone [your-repo-link]
 
 ```
 
-
 2. **Install dependencies:**
+
 ```bash
 npm install
 
 ```
 
-
 3. **Environment Variables:**
 Create a `.env` file and add the following:
 
 ```env
-    PORT=3000
-    MONGO_URI=your_mongodb_connection_string
-    JWT_SECRET=your_secret_key
-    JWT_EXPIRES_IN=1d
-    ```
-4.  **Run Development Mode:**
-    
+PORT=3000
+MONGO_URI=your_mongodb_connection_string
+JWT_SECRET=your_secret_key
+JWT_EXPIRES_IN=1d
+
+```
+
+4. **Run Development Mode:**
+
 ```bash
-    npm run dev
-    ```
+npm run dev
+
+```
 
 ## 🐶 API Testing with Bruno
+
 I used **Bruno** for testing because of its lightweight, Git-friendly approach to API collections. You can find the `/bruno-collection` folder in this repo to import and test the endpoints immediately.
 
 ---
 
 ### 💡 Final Developer Note
-This project was a significant step in moving from "Basic CRUD" to "System Engineering." It taught me the importance of global error handling and why TypeScript is essential for maintaining large-scale backend architectures.
 
-I am studing and learning to use Zod and will implement this feature in the near future to add the validation in my backend Project. I will delete this line and will update the README.md file in future when i will implement the Zod in this Project.
+This project was a significant step in moving from "Basic CRUD" to "System Engineering." It taught me the importance of centralized systems like global error handling, robust input validation with Zod middleware pipelines, and why TypeScript is essential for maintaining large-scale backend architectures.
+
+```
+
 ```

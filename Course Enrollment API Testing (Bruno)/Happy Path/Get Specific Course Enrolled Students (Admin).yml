@@ -1,7 +1,7 @@
 info:
   name: Get Specific Course Enrolled Students (Admin)
   type: http
-  seq: 7
+  seq: 8
 
 http:
   method: GET

@@ -1,5 +1,5 @@
 info:
-  name: Update Course (Only Admin Who Created It)
+  name: Update Course (Admin or Instructor Who Created It)
   type: http
   seq: 4
 

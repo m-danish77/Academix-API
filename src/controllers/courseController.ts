@@ -19,7 +19,9 @@ const createCourse = async (
     const { title, description, maxCapacity, price } = req.body;
 
     if (!req.user || !req.user._id) {
-      const err: any = new Error("Unauthorized: Instructor ID required");
+      const err: any = new Error(
+        "Unauthorized: Instructor or Admin ID required",
+      );
       err.status = 401;
       return next(err);
     }
@@ -56,15 +58,20 @@ const updateCourse = async (
     }
 
     if (!req.user || !req.user._id) {
-      const err: any = new Error("Unauthorized: Instructor ID required");
+      const err: any = new Error(
+        "Unauthorized: Instructor or Admin ID required",
+      );
       err.status = 401;
       return next(err);
     }
 
     // We converted both of them to strings because two objects can never equal
-    if (req.user._id.toString() !== course.instructor.toString()) {
+    if (
+      req.user.role !== "admin" &&
+      req.user._id.toString() !== course.instructor.toString()
+    ) {
       const err: any = new Error(
-        "You don't created this course. Only admin who created the course can update it.",
+        "You don't created this course. Only Admin or Instructor who created the course can update it.",
       );
       err.status = 401;
       return next(err);
@@ -103,14 +110,19 @@ const deleteCourse = async (
     }
 
     if (!req.user || !req.user._id) {
-      const err: any = new Error("Unauthorized: Instructor ID required");
+      const err: any = new Error(
+        "Unauthorized: Instructor or Admin ID required",
+      );
       err.status = 401;
       return next(err);
     }
 
-    if (req.user._id.toString() !== course.instructor.toString()) {
+    if (
+      req.user.role !== "admin" &&
+      req.user._id.toString() !== course.instructor.toString()
+    ) {
       const err: any = new Error(
-        "You don't created this course. Only admin who created this course can delete it.",
+        "You don't created this course. Only Admin or Instructor who created this course can delete it.",
       );
       err.status = 401;
       return next(err);
@@ -118,7 +130,7 @@ const deleteCourse = async (
 
     const deleteCourse = await Course.findByIdAndDelete(courseId);
     res
-      .status(204)
+      .status(200)
       .json({ message: "Course Deleted", deleteCourse: deleteCourse });
   } catch (e) {
     next(e);

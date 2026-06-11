@@ -5,8 +5,19 @@ info:
 
 http:
   method: POST
-  url: ""
-  auth: inherit
+  url: "{{base_url}}/api/courses"
+  body:
+    type: json
+    data: |
+      {
+         "title": "Zod Learning course",
+         "description": "Learn Zod in Depth",
+         "maxCapacity": 5,
+         "price": "200"
+      }
+  auth:
+    type: bearer
+    token: "{{token}}"
 
 settings:
   encodeUrl: true

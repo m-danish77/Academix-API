@@ -15,7 +15,7 @@ courseRouter.get("/courses", courseController.getCourses);
 courseRouter.post(
   "/courses",
   protect,
-  restrictTo,
+  restrictTo(["instructor", "admin"]),
   validate(createCourseSchema),
   courseController.createCourse,
 );
@@ -23,7 +23,7 @@ courseRouter.post(
 courseRouter.put(
   "/courses/:courseId",
   protect,
-  restrictTo,
+  restrictTo(["instructor", "admin"]),
   validate(updateCourseSchema),
   courseController.updateCourse,
 );
@@ -31,7 +31,7 @@ courseRouter.put(
 courseRouter.delete(
   "/courses/:courseId",
   protect,
-  restrictTo,
+  restrictTo(["instructor", "admin"]),
   validate(deleteCourseSchema),
   courseController.deleteCourse,
 );

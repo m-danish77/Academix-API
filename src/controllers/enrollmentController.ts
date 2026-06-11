@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import { Request, Response, NextFunction } from "express";
 import Course from "../models/Course.js";
 import Enrollment from "../models/Enrollment.js";
@@ -19,9 +20,12 @@ const postEnroll = async (req: Request, res: Response, next: NextFunction) => {
       return next(err);
     }
 
-    if (studentId.toString() === course.instructor.toString()) {
+    if (
+      req.user!.role === "admin" ||
+      studentId.toString() === course.instructor.toString()
+    ) {
       const err: any = new Error(
-        "Instructor can't enrolled in its own course..",
+        "Admin can't enrolled in any course and Instructor can't enrolled in its own course..",
       );
       err.status = 400;
       return next(err);
@@ -69,23 +73,41 @@ const getSpecificStudentCourses = async (
   next: NextFunction,
 ) => {
   try {
-    const studentId = req.user?._id;
+    let studentId = req.user?._id.toString();
+    const isAdmin = req.user?.role === "admin";
+
+    if (isAdmin && !req.query.studentId) {
+      const err: any = new Error(
+        "Admin must provide studentId as a query parameter (e.g., ?studentId=...).",
+      );
+      err.status = 400;
+      return next(err);
+    }
+
+    if (isAdmin && req.query.studentId) {
+      const id = req.query.studentId as string;
+
+      // Validate ObjectId format
+      if (!mongoose.Types.ObjectId.isValid(id)) {
+        const err: any = new Error("Invalid student ID format.");
+        err.status = 400;
+        return next(err);
+      }
+      studentId = id;
+    }
+
     if (!studentId) {
-      const err: any = new Error("Unauthorized: You are not loggedIn.");
+      const err: any = new Error("Unauthorized: You are not logged in.");
       err.status = 401;
       return next(err);
     }
 
-    // First we find the student name by studentId, then course title and description by courseId, we also want instructor name instead of its id so we use nested populate.
-    const allCourses = await Enrollment.find({ studentId: studentId })
+    const allCourses = await Enrollment.find({ studentId })
       .populate("studentId", "name")
       .populate({
         path: "courseId",
-        select: "title description", // Fields to get from Course
-        populate: {
-          path: "instructor",
-          select: "name", // Fields to get from the Instructor/User model
-        },
+        select: "title description",
+        populate: { path: "instructor", select: "name" },
       });
 
     res.status(200).json(allCourses);
@@ -101,6 +123,20 @@ const getSpecificCourseEnrolledStudents = async (
 ) => {
   try {
     const { courseId } = req.params;
+    const course = await Course.findById(courseId);
+    if (!course) {
+      const err: any = new Error("Course Not Found");
+      err.status = 401;
+      return next(err);
+    }
+    if (
+      req.user!.role !== "admin" &&
+      req.user!._id.toString() !== course.instructor.toString()
+    ) {
+      const err: any = new Error("You are not Instructor of this course");
+      err.status = 400;
+      return next(err);
+    }
     const courseStudents = await Enrollment.find({
       courseId: `${courseId}`,
     }).populate("studentId", "name email");

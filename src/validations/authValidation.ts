@@ -9,7 +9,7 @@ export const registerSchema = z.object({
     password: z
       .string({ error: "Password must be a string." })
       .min(6, "Password must be at least 6 characters long"),
-    role: z.enum(["student", "admin"]).default("student"),
+    role: z.enum(["student", "instructor", "admin"]).default("student"),
   }),
 });
 

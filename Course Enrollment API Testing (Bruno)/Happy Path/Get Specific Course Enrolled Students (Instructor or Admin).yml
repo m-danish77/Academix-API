@@ -1,11 +1,11 @@
 info:
-  name: Get All Courses of Specific Students
+  name: Get Specific Course Enrolled Students (Instructor or Admin)
   type: http
-  seq: 7
+  seq: 9
 
 http:
   method: GET
-  url: "{{base_url}}/api/my-courses"
+  url: "{{base_url}}/api/course/69fb32a5a542675ea0d7237b/students"
   auth:
     type: bearer
     token: "{{token}}"

@@ -17,6 +17,7 @@ enrollmentRouter.post(
 enrollmentRouter.get(
   "/my-courses",
   protect,
+  restrictTo(["student", "admin"]),
   enrollmentController.getSpecificStudentCourses,
 );
 
@@ -24,7 +25,7 @@ enrollmentRouter.get(
 enrollmentRouter.get(
   "/course/:courseId/students",
   protect,
-  restrictTo,
+  restrictTo(["instructor", "admin"]),
   enrollmentController.getSpecificCourseEnrolledStudents,
 );
 

@@ -1,5 +1,5 @@
 info:
-  name: Create Course (Admin)
+  name: Create Course (Instructor & Admin)
   type: http
   seq: 3
 

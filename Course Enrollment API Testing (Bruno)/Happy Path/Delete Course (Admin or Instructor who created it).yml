@@ -1,11 +1,11 @@
 info:
-  name: Get Specific Course Enrolled Students (Admin)
+  name: Delete Course (Admin or Instructor who created it)
   type: http
-  seq: 8
+  seq: 5
 
 http:
-  method: GET
-  url: "{{base_url}}/api/course/69fb32a5a542675ea0d7237b/students"
+  method: DELETE
+  url: "{{base_url}}/api/courses/69fb38bbf004601dabeef757"
   auth:
     type: bearer
     token: "{{token}}"

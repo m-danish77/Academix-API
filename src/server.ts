@@ -8,6 +8,8 @@ import express, {
 } from "express";
 import helmet from "helmet";
 import cors from "cors";
+import swaggerUi from "swagger-ui-express";
+import swaggerSpec from "./swagger.js";
 
 // Local Modules
 import connectDB from "./configs/mongoose.js";
@@ -70,6 +72,9 @@ app.get("/", (req: Request, res: Response) => {
 app.use("/api", authRouter);
 app.use("/api", courseRouter);
 app.use("/api", enrollmentRouter);
+
+// Swagger API Endpoint should be above 404 handler and below all other routes
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 app.use((req: Request, res: Response, next: NextFunction) => {
   const err: any = new Error("404 Page Not Found");

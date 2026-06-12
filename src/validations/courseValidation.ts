@@ -12,7 +12,8 @@ export const createCourseSchema = z.object({
     maxCapacity: z
       .number({ error: "Maximum capacity is required" })
       .int("Capacity must be a whole integer number")
-      .positive("Capacity must be at least 1 student"),
+      .positive("Capacity must be at least 1 student")
+      .max(50, "Maximum capacity cannot exceed 50 students"),
     price: z
       .number({ error: "Price is required and should be a number" })
       .nonnegative("Price cannot be a negative value"),

@@ -21,7 +21,6 @@ const courseSchema = new mongoose.Schema(
     },
     maxCapacity: {
       type: Number,
-      max: 10,
       required: true,
     },
     price: {

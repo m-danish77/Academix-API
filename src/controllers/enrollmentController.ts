@@ -34,7 +34,7 @@ const postEnroll = async (req: Request, res: Response, next: NextFunction) => {
     // Checking if the student is already enrolled in the course
     const existingEnrollment = await Enrollment.findOne({
       studentId: studentId,
-      courseId: courseId as any,
+      courseId: `${courseId}`,
     });
 
     if (existingEnrollment) {
@@ -45,7 +45,7 @@ const postEnroll = async (req: Request, res: Response, next: NextFunction) => {
 
     // Checking that is'nt the total seats for enrollment of specific course is full
     const totalEnrolledStudents = await Enrollment.countDocuments({
-      courseId: courseId as any,
+      courseId: `${courseId}`,
     });
     if (totalEnrolledStudents >= course.maxCapacity) {
       const err: any = new Error("The course enrollment if full.");

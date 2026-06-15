@@ -21,7 +21,7 @@ const authRouter = express.Router();
  *             properties:
  *               name: { type: string, example: "Muhammad Munib Danish" }
  *               email: { type: string, example: "munib@example.com" }
- *               password: { type: string, format: password, example: "123456" }
+ *               password: { type: string, format: password, example: "Danish9." }
  *               role: { type: string, enum: ["student", "instructor", "admin"], default: "student" }
  *     responses:
  *       201:
@@ -59,7 +59,7 @@ authRouter.post(
  *             required: [email, password]
  *             properties:
  *               email: { type: string, example: "munib@example.com" }
- *               password: { type: string, format: password, example: "123456" }
+ *               password: { type: string, format: password, example: "Danish9." }
  *     responses:
  *       200:
  *         description: Successful login, returns JWT token

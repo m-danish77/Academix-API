@@ -3,8 +3,43 @@ import Course from "../models/Course.js";
 
 const getCourses = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const allCourses = await Course.find().populate("instructor", "name email");
-    res.status(200).json(allCourses);
+    // 1. Parse and sanitize query parameters with defaults also add validations so that invalid values are handled gracefully
+    const page = Math.max(1, parseInt(req.query.page as string) || 1);
+    const limit = Math.min(
+      100,
+      Math.max(1, parseInt(req.query.limit as string) || 10),
+    );
+
+    // 2. Calculate the number of documents to skip
+    const skipIndex = (page - 1) * limit;
+
+    // 3. Execute the data query and total count in parallel for performance
+    const [allCourses, totalCourses] = await Promise.all([
+      // .lean() Improves performance by returning plain JS objects
+      Course.find()
+        .populate("instructor", "name email")
+        .skip(skipIndex)
+        .limit(limit)
+        .lean(),
+      Course.countDocuments(),
+    ]);
+
+    // 4. Calculate total pages
+    const totalPages = Math.ceil(totalCourses / limit);
+
+    // 5. Send response with pagination metadata
+    res.status(200).json({
+      success: true,
+      data: allCourses,
+      pagination: {
+        currentPage: page,
+        totalPages: totalPages,
+        totalItems: totalCourses,
+        itemsPerPage: limit,
+        hasNextPage: page < totalPages,
+        hasPrevPage: page > 1,
+      },
+    });
   } catch (e) {
     next(e);
   }

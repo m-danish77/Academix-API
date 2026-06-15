@@ -15,25 +15,63 @@ const courseRouter = express.Router();
  * @swagger
  * /courses:
  *   get:
- *     summary: Get all courses
+ *     summary: Get all courses with pagination
  *     tags: [Courses]
- *     description: Returns a list of all courses (no authentication required)
+ *     description: Returns a paginated list of courses. No authentication required.
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *           default: 1
+ *         description: Page number (starts from 1)
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *           maximum: 100
+ *           default: 10
+ *         description: Number of courses per page (max 100)
  *     responses:
  *       200:
- *         description: Successful response
+ *         description: Successful response with pagination metadata
  *         content:
  *           application/json:
  *             schema:
- *               type: array
- *               items:
- *                 type: object
- *                 properties:
- *                   _id: { type: string }
- *                   title: { type: string }
- *                   description: { type: string }
- *                   maxCapacity: { type: number }
- *                   price: { type: number }
- *                   instructor: { type: object }
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       _id: { type: string }
+ *                       title: { type: string }
+ *                       description: { type: string }
+ *                       maxCapacity: { type: number }
+ *                       price: { type: number }
+ *                       instructor:
+ *                         type: object
+ *                         properties:
+ *                           _id: { type: string }
+ *                           name: { type: string }
+ *                           email: { type: string }
+ *                 pagination:
+ *                   type: object
+ *                   properties:
+ *                     currentPage: { type: integer, example: 1 }
+ *                     totalPages: { type: integer, example: 5 }
+ *                     totalItems: { type: integer, example: 42 }
+ *                     itemsPerPage: { type: integer, example: 10 }
+ *                     hasNextPage: { type: boolean, example: true }
+ *                     hasPrevPage: { type: boolean, example: false }
+ *       500:
+ *         description: Internal server error
  */
 
 courseRouter.get("/courses", courseController.getCourses);

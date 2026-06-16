@@ -2,6 +2,7 @@ import express from "express";
 import authController from "../controllers/authController.js";
 import { validate } from "../middlewares/validate.js";
 import { loginSchema, registerSchema } from "../validations/authValidation.js";
+import { authLimiter } from "../middlewares/rateLimiter.js";
 
 const authRouter = express.Router();
 
@@ -40,6 +41,7 @@ const authRouter = express.Router();
  */
 authRouter.post(
   "/auth/register",
+  authLimiter,
   validate(registerSchema),
   authController.postRegister,
 );
@@ -78,7 +80,14 @@ authRouter.post(
  *                     role: { type: string }
  *       400:
  *         description: Invalid email or password
+ *       429:
+ *         description: Too many requests, please try again later
  */
-authRouter.post("/auth/login", validate(loginSchema), authController.postLogin);
+authRouter.post(
+  "/auth/login",
+  authLimiter,
+  validate(loginSchema),
+  authController.postLogin,
+);
 
 export default authRouter;

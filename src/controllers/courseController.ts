@@ -34,7 +34,7 @@ const getCourses = async (req: Request, res: Response, next: NextFunction) => {
       pagination: {
         currentPage: page,
         totalPages: totalPages,
-        totalItems: totalCourses,
+        totalCourses: totalCourses,
         itemsPerPage: limit,
         hasNextPage: page < totalPages,
         hasPrevPage: page > 1,

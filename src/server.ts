@@ -16,6 +16,7 @@ import connectDB from "./configs/mongoose.js";
 import authRouter from "./routes/authRouter.js";
 import courseRouter from "./routes/courseRouter.js";
 import enrollmentRouter from "./routes/enrollmentRouter.js";
+import { generalLimiter } from "./middlewares/rateLimiter.js";
 
 const app: Application = express();
 const port = process.env.PORT || 3000;
@@ -59,8 +60,11 @@ app.use(
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Apply general limit to all API routes below this code
+app.use("/api", generalLimiter);
+
 // If someone hits the base_url it should'nt go to the 404 handler
-app.get("/", (req: Request, res: Response) => {
+app.get("/", generalLimiter, (req: Request, res: Response) => {
   res.status(200).json({
     success: true,
     message: "Welcome to the Course & Enrollment Management API",
@@ -68,7 +72,6 @@ app.get("/", (req: Request, res: Response) => {
     timestamp: new Date().toISOString(),
   });
 });
-
 app.use("/api", authRouter);
 app.use("/api", courseRouter);
 app.use("/api", enrollmentRouter);

@@ -1,3 +1,6 @@
+// ✅ 1. IMPORT FIRST – this runs the validation immediately!
+import { config } from "./configs/validateEnv.js";
+
 // External Modules
 import express, {
   json,
@@ -19,7 +22,7 @@ import enrollmentRouter from "./routes/enrollmentRouter.js";
 import { generalLimiter } from "./middlewares/rateLimiter.js";
 
 const app: Application = express();
-const port = process.env.PORT || 3000;
+const port = config.PORT || 3000;
 
 /**
  * SECURITY MIDDLEWARE: Helmet.js
@@ -60,9 +63,6 @@ app.use(
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Apply general limit to all API routes below this code
-app.use("/api", generalLimiter);
-
 // If someone hits the base_url it should'nt go to the 404 handler
 app.get("/", generalLimiter, (req: Request, res: Response) => {
   res.status(200).json({
@@ -72,6 +72,8 @@ app.get("/", generalLimiter, (req: Request, res: Response) => {
     timestamp: new Date().toISOString(),
   });
 });
+// Apply general limit to all API routes below this code
+app.use("/api", generalLimiter);
 app.use("/api", authRouter);
 app.use("/api", courseRouter);
 app.use("/api", enrollmentRouter);

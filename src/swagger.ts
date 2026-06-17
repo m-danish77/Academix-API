@@ -1,7 +1,8 @@
 import swaggerJsdoc from "swagger-jsdoc";
+import { config } from "./configs/validateEnv.js";
 
 // We are writing below code to determine which files to scan for JSDoc comments because in production our routes are compiled to JS files as only dist folder is available in production
-const isProduction = process.env.NODE_ENV === "production";
+const isProduction = config.NODE_ENV === "production";
 // Determine which files to scan for JSDoc comments
 const apis = isProduction
   ? ["./dist/routes/*.js"] // Production: scan compiled JS files
@@ -11,9 +12,9 @@ const apis = isProduction
 const getServers = () => {
   const servers = [];
 
-  if (process.env.DEPLOYED_URL) {
+  if (config.DEPLOYED_URL) {
     servers.push({
-      url: process.env.DEPLOYED_URL,
+      url: config.DEPLOYED_URL,
       description: isProduction ? "Production server" : "Deployed server",
     });
   }

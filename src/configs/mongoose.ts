@@ -1,10 +1,9 @@
 import mongoose from "mongoose";
-import dotenv from "dotenv";
-dotenv.config();
+import { config } from "./validateEnv.js";
 
 const connectDB = async (): Promise<void> => {
   try {
-    const uri = process.env.ATLAS_URI;
+    const uri = config.ATLAS_URI;
     if (!uri) {
       throw new Error("ATLAS_URI is not defined in .env file.");
     }

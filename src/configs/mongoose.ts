@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import { config } from "./validateEnv.js";
+import logger from "./logger.js";
 
 const connectDB = async (): Promise<void> => {
   try {
@@ -8,12 +9,12 @@ const connectDB = async (): Promise<void> => {
       throw new Error("ATLAS_URI is not defined in .env file.");
     }
     await mongoose.connect(uri);
-    console.log("MongoDB Connected");
+    logger.info("MongoDB Connected");
   } catch (e) {
     if (e instanceof Error) {
-      console.error(`MongoDB Connection Error: ${e.message}`);
+      logger.error(`MongoDB Connection Error: ${e.message}`);
     } else {
-      console.error("An unknown error occurred during DB connection:", e);
+      logger.error("An unknown error occurred during DB connection:", e);
     }
     process.exit(1);
   }

@@ -13,6 +13,7 @@ import helmet from "helmet";
 import cors from "cors";
 import swaggerUi from "swagger-ui-express";
 import swaggerSpec from "./swagger.js";
+import morgan from "morgan";
 
 // Local Modules
 import connectDB from "./configs/mongoose.js";
@@ -20,25 +21,12 @@ import authRouter from "./routes/authRouter.js";
 import courseRouter from "./routes/courseRouter.js";
 import enrollmentRouter from "./routes/enrollmentRouter.js";
 import { generalLimiter } from "./middlewares/rateLimiter.js";
+import logger from "./configs/logger.js";
 
 const app: Application = express();
-const port = config.PORT || 3000;
+const port = config.PORT;
 
-/**
- * SECURITY MIDDLEWARE: Helmet.js
- * Why this is necessary:
- * By default, Express leaks sensitive infrastructure data via HTTP response headers
- * (e.g., 'X-Powered-By: Express'), making it easier for attackers to target known framework flaws.
- * It Minimizes attack surface by hiding Express signature headers (e.g., X-Powered-By)
- * and setting secure HTTP headers to mitigate XSS, Clickjacking, and MIME-sniffing.
- */
 app.use(helmet());
-
-/**
- * SECURITY: CORS (Cross-Origin Resource Sharing)
- * Gatekeeper for browser requests. Restricts API access strictly to trusted
- * frontends, preventing unauthorized cross-origin data leaks and script execution.
- */
 
 // Only request comming from these urls are allowed
 const allowedOrigins = ["http://localhost:3000", "https://yourfrontend.com"];
@@ -59,6 +47,18 @@ app.use(
     credentials: true,
   }),
 );
+
+// Create a stream that Winston understands
+const morganStream = {
+  write: (message: string) => {
+    // Morgan gives us a string. We trim the newline and send it to Winston as 'info level' so it logs nicely
+    logger.info(message.trim());
+  },
+};
+
+// Use morgan with the 'combined' format (standard Apache log format)
+// { stream: morganStream }: This is the magic toggle switch. By passing your custom stream object (morganStream) here, you are telling Morgan: "Do not print this information to the terminal screen. Send it directly to the custom write pipeline we built above."
+app.use(morgan("combined", { stream: morganStream }));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -88,6 +88,16 @@ app.use((req: Request, res: Response, next: NextFunction) => {
 });
 
 app.use((err: any, req: Request, res: Response, next: NextFunction) => {
+  // ✅ Log error with request context
+  logger.error({
+    message: err.message,
+    status: err.status || 500,
+    url: req.originalUrl,
+    method: req.method,
+    ip: req.ip,
+    stack: err.stack,
+  });
+
   const status = err.status || 500;
   const message = err.message || "Something went wrong with server.";
 
@@ -100,7 +110,7 @@ app.use((err: any, req: Request, res: Response, next: NextFunction) => {
 const startServer = async () => {
   await connectDB();
   app.listen(port, () => {
-    console.log(`Server is running at address http://localhost:${port}`);
+    logger.info(`Server is running at address http://localhost:${port}`);
   });
 };
 startServer();

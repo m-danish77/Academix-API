@@ -1,5 +1,6 @@
-// ✅ 1. IMPORT FIRST – this runs the validation immediately!
+// 1. IMPORT FIRST – this runs the validation immediately!
 import { config } from "./configs/validateEnv.js";
+import crypto from "crypto";
 
 // External Modules
 import express, {
@@ -48,6 +49,16 @@ app.use(
   }),
 );
 
+// Generate a unique Request ID for every request
+app.use((req: Request, res: Response, next: NextFunction) => {
+  req.id = crypto.randomUUID(); // generate random ID
+  res.setHeader("X-Request-Id", req.id); // send back to client
+  next();
+});
+
+// morgan.token() Registers a custom variable called requestId that Morgan can use in its log format.
+morgan.token("requestId", (req: Request) => req.id || "no-id");
+
 // Create a stream that Winston understands
 const morganStream = {
   write: (message: string) => {
@@ -56,9 +67,14 @@ const morganStream = {
   },
 };
 
-// Use morgan with the 'combined' format (standard Apache log format)
+// Change morgan from 'combined' to a custom format string to include Request ID
 // { stream: morganStream }: This is the magic toggle switch. By passing your custom stream object (morganStream) here, you are telling Morgan: "Do not print this information to the terminal screen. Send it directly to the custom write pipeline we built above."
-app.use(morgan("combined", { stream: morganStream }));
+app.use(
+  morgan(
+    ':remote-addr - :remote-user [:date[clf]] ":method :url HTTP/:http-version" :status :res[content-length] ":referrer" ":user-agent" - RequestId::requestId',
+    { stream: morganStream },
+  ),
+);
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -88,8 +104,9 @@ app.use((req: Request, res: Response, next: NextFunction) => {
 });
 
 app.use((err: any, req: Request, res: Response, next: NextFunction) => {
-  // ✅ Log error with request context
+  // Log error with request context
   logger.error({
+    requestId: req.id,
     message: err.message,
     status: err.status || 500,
     url: req.originalUrl,

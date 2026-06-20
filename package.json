@@ -5,9 +5,11 @@
   "main": "index.js",
   "scripts": {
     "dev": "tsx watch src/server.ts",
+    "start": "node dist/server.js",
     "build": "tsc",
     "typecheck": "tsc --noEmit",
-    "start": "node dist/server.js"
+    "test": "NODE_ENV=test vitest run",
+    "test:watch": "NODE_ENV=test vitest watch"
   },
   "keywords": [],
   "author": "",
@@ -37,9 +39,12 @@
     "@types/mongoose": "^5.11.96",
     "@types/morgan": "^1.9.10",
     "@types/node": "^25.6.0",
+    "@types/supertest": "^7.2.0",
     "@types/swagger-jsdoc": "^6.0.4",
     "@types/swagger-ui-express": "^4.1.8",
+    "supertest": "^7.2.2",
     "tsx": "^4.21.0",
-    "typescript": "^6.0.3"
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.9"
   }
 }

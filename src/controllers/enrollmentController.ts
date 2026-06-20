@@ -48,7 +48,7 @@ const postEnroll = async (req: Request, res: Response, next: NextFunction) => {
       courseId: `${courseId}`,
     });
     if (totalEnrolledStudents >= course.maxCapacity) {
-      const err: any = new Error("The course enrollment if full.");
+      const err: any = new Error("The course enrollment is full.");
       err.status = 400;
       return next(err);
     }

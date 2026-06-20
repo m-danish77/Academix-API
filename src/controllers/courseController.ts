@@ -88,7 +88,7 @@ const updateCourse = async (
 
     if (!course) {
       const err: any = new Error("Course Not Found");
-      err.status = 401;
+      err.status = 404;
       return next(err);
     }
 
@@ -140,7 +140,7 @@ const deleteCourse = async (
 
     if (!course) {
       const err: any = new Error("Course Not Found");
-      err.status = 401;
+      err.status = 404;
       return next(err);
     }
 

@@ -3,6 +3,7 @@ import app from "../app.js";
 import User from "../models/User.js";
 import mongoose from "mongoose";
 import { config } from "../configs/validateEnv.js";
+import Course from "../models/Course.js";
 
 // Connect to database before tests
 beforeAll(async () => {
@@ -24,6 +25,7 @@ describe("Courses API", () => {
   let studentToken: string;
   let createdCourseId: string;
   const testPassword = "Test123.";
+  const courseTitlesToDelete: string[] = [];
 
   // Create test users and get tokens
   beforeAll(async () => {
@@ -125,6 +127,7 @@ describe("Courses API", () => {
 
       expect(res.status).toBe(201);
       expect(res.body).toHaveProperty("_id");
+      courseTitlesToDelete.push(res.body.title);
     });
 
     it("should return 403 if student tries to create", async () => {
@@ -196,6 +199,11 @@ describe("Courses API", () => {
     if (emailsToDelete.length > 0) {
       await User.deleteMany({ email: { $in: emailsToDelete } });
       console.log(`Deleted ${emailsToDelete.length} test users`);
+    }
+
+    if (courseTitlesToDelete.length > 0) {
+      await Course.deleteMany({ title: { $in: courseTitlesToDelete } });
+      console.log(`Deleted ${courseTitlesToDelete.length} test courses`);
     }
   });
 });

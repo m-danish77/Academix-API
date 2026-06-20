@@ -15,6 +15,7 @@ import cors from "cors";
 import swaggerUi from "swagger-ui-express";
 import swaggerSpec from "./swagger.js";
 import morgan from "morgan";
+import { RequestHandler } from "express";
 
 // Local Modules
 import authRouter from "./routes/authRouter.js";
@@ -79,16 +80,20 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // If someone hits the base_url it should'nt go to the 404 handler
-app.get("/", generalLimiter, (req: Request, res: Response) => {
-  res.status(200).json({
-    success: true,
-    message: "Welcome to the Course & Enrollment Management API",
-    status: "Healthy",
-    timestamp: new Date().toISOString(),
-  });
-});
+app.get(
+  "/",
+  generalLimiter as RequestHandler,
+  (req: Request, res: Response) => {
+    res.status(200).json({
+      success: true,
+      message: "Welcome to the Course & Enrollment Management API",
+      status: "Healthy",
+      timestamp: new Date().toISOString(),
+    });
+  },
+);
 // Apply general limit to all API routes below this code
-app.use("/api", generalLimiter);
+app.use("/api", generalLimiter as RequestHandler);
 app.use("/api", authRouter);
 app.use("/api", courseRouter);
 app.use("/api", enrollmentRouter);

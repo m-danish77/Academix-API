@@ -6,16 +6,16 @@ import Enrollment from "../models/Enrollment.js";
 import mongoose from "mongoose";
 import { config } from "../configs/validateEnv.js";
 
-// ✅ Connect to database before tests
+// Connect to database before tests
 beforeAll(async () => {
   await mongoose.connect(config.ATLAS_URI);
-  console.log("✅ Test DB connected");
+  console.log("MongoDB Atlas connected");
 });
 
-// ✅ Disconnect after all tests
+// Disconnect after all tests
 afterAll(async () => {
   await mongoose.connection.close();
-  console.log("🔌 Test DB disconnected");
+  console.log("MongoDB Atlas disconnected");
 });
 
 describe("Enrollments API", () => {
@@ -234,20 +234,20 @@ describe("Enrollments API", () => {
     });
   });
 
-  // ✅ Cleanup: Delete all test users, course, and enrollments
+  // Delete all test users, course, and enrollments
   afterAll(async () => {
     // Delete enrollments first
     await Enrollment.deleteMany({ courseId: courseId });
-    console.log(`🧹 Deleted enrollments for course ${courseId}`);
+    console.log(`Deleted enrollments for course ${courseId}`);
 
     // Delete the test course
     await Course.deleteOne({ _id: courseId });
-    console.log(`🧹 Deleted test course`);
+    console.log(`Deleted test course`);
 
     // Delete all test users
     if (emailsToDelete.length > 0) {
       await User.deleteMany({ email: { $in: emailsToDelete } });
-      console.log(`🧹 Deleted ${emailsToDelete.length} test users`);
+      console.log(`Deleted ${emailsToDelete.length} test users`);
     }
   });
 });

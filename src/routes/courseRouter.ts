@@ -55,6 +55,7 @@ const courseRouter = express.Router();
  *                       description: { type: string }
  *                       maxCapacity: { type: number }
  *                       price: { type: number }
+ *                       videoUrl: { type: string }
  *                       instructor:
  *                         type: object
  *                         properties:
@@ -90,12 +91,13 @@ courseRouter.get("/courses", courseController.getCourses);
  *         application/json:
  *           schema:
  *             type: object
- *             required: [title, description, maxCapacity, price]
+ *             required: [title, description, maxCapacity, price, videoUrl (optional)]
  *             properties:
  *               title: { type: string, example: "Node.js Masterclass" }
  *               description: { type: string, example: "Learn Node.js from scratch" }
  *               maxCapacity: { type: number, example: 30 }
  *               price: { type: number, example: 49.99 }
+ *               videoUrl: { type: string, example: "https://www.youtube.com/watch?v=" }
  *     responses:
  *       201:
  *         description: Course created successfully
@@ -139,6 +141,7 @@ courseRouter.post(
  *               description: { type: string, example: "More advanced topics" }
  *               maxCapacity: { type: number, example: 25 }
  *               price: { type: number, example: 59.99 }
+ *               videoUrl: { type: string, example: "https://www.youtube.com/watch?v=" }
  *     responses:
  *       200:
  *         description: Course updated successfully
@@ -152,6 +155,7 @@ courseRouter.post(
  *                 description: { type: string }
  *                 maxCapacity: { type: number }
  *                 price: { type: number }
+ *                 videoUrl: { type: string }
  *                 instructor: { type: string }
  *       401:
  *         description: Unauthorized (missing or invalid token)

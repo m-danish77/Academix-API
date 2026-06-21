@@ -5,7 +5,7 @@ info:
 
 http:
   method: DELETE
-  url: "{{base_url}}/api/courses/69fb38bbf004601dabeef757"
+  url: "{{base_url}}/api/courses/6a37d08d886d5cc9d207581f"
   auth:
     type: bearer
     token: "{{token}}"

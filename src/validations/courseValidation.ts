@@ -17,6 +17,18 @@ export const createCourseSchema = z.object({
     price: z
       .number({ error: "Price is required and should be a number" })
       .nonnegative("Price cannot be a negative value"),
+    videoUrl: z
+      .url({ error: "Must be a valid YouTube URL" })
+      .optional()
+      .refine(
+        (url) => {
+          if (!url) return true;
+          return /^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.be)\/.+$/.test(
+            url,
+          );
+        },
+        { message: "Must be a valid YouTube URL" },
+      ),
   }),
 });
 

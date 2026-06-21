@@ -51,7 +51,7 @@ const createCourse = async (
   next: NextFunction,
 ) => {
   try {
-    const { title, description, maxCapacity, price } = req.body;
+    const { title, description, maxCapacity, price, videoUrl } = req.body;
 
     if (!req.user || !req.user._id) {
       const err: any = new Error(
@@ -66,6 +66,7 @@ const createCourse = async (
       description,
       maxCapacity,
       price,
+      videoUrl,
       instructor: req.user._id,
     });
 
@@ -81,7 +82,7 @@ const updateCourse = async (
   next: NextFunction,
 ) => {
   try {
-    const { title, description, maxCapacity, price } = req.body;
+    const { title, description, maxCapacity, price, videoUrl } = req.body;
     const courseId = req.params.courseId;
 
     const course = await Course.findById(courseId);
@@ -118,6 +119,7 @@ const updateCourse = async (
         description,
         maxCapacity,
         price,
+        videoUrl,
       },
       { returnDocument: "after" },
     );

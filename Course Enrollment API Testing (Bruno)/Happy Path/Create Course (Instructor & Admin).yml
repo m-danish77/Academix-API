@@ -13,7 +13,8 @@ http:
          "title": "Advanced JS",
          "description": "Learn JS in Depth",
          "maxCapacity": 9,
-         "price": 200
+         "price": 200,
+         "videoUrl": "https://youtu.be/E9oaDnkAUoo"
       }
   auth:
     type: bearer

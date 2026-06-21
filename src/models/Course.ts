@@ -5,6 +5,7 @@ interface ICourse extends Document {
   description: string;
   maxCapacity: number;
   price: number;
+  videoUrl?: string;
   instructor: mongoose.Types.ObjectId;
 }
 
@@ -28,6 +29,10 @@ const courseSchema = new mongoose.Schema(
       required: true,
       min: 0,
       max: 2000,
+    },
+    videoUrl: {
+      type: String,
+      trim: true,
     },
     instructor: {
       type: mongoose.Schema.Types.ObjectId,

@@ -86,6 +86,7 @@ describe("Courses API", () => {
           description: "Created by instructor",
           maxCapacity: 15,
           price: 29.99,
+          videoUrl: "https://www.youtube.com/watch?v=test123",
         });
 
       expect(res.status).toBe(201);
@@ -103,6 +104,7 @@ describe("Courses API", () => {
           description: "Created by student",
           maxCapacity: 15,
           price: 29.99,
+          videoUrl: "https://www.youtube.com/watch?v=test123",
         });
 
       expect(res.status).toBe(403);

@@ -1,9 +1,9 @@
 import request from "supertest";
 import app from "../app.js";
 import User from "../models/User.js";
+import Course from "../models/Course.js";
 import mongoose from "mongoose";
 import { config } from "../configs/validateEnv.js";
-import Course from "../models/Course.js";
 
 // Connect to database before tests
 beforeAll(async () => {
@@ -18,32 +18,16 @@ afterAll(async () => {
 });
 
 describe("Courses API", () => {
-  // Store user emails for cleanup
   const emailsToDelete: string[] = [];
-  let adminToken: string;
+  const courseTitlesToDelete: string[] = [];
   let instructorToken: string;
   let studentToken: string;
   let createdCourseId: string;
   const testPassword = "Test123.";
-  const courseTitlesToDelete: string[] = [];
 
   // Create test users and get tokens
   beforeAll(async () => {
-    // 1. Admin user
-    const adminEmail = `admin_${Date.now()}@test.com`;
-    emailsToDelete.push(adminEmail);
-    await request(app).post("/api/auth/register").send({
-      name: "Test Admin",
-      email: adminEmail,
-      password: testPassword,
-      role: "admin",
-    });
-    const adminLogin = await request(app)
-      .post("/api/auth/login")
-      .send({ email: adminEmail, password: testPassword });
-    adminToken = adminLogin.body.token;
-
-    // 2. Instructor user
+    // 1. Instructor user
     const instructorEmail = `instructor_${Date.now()}@test.com`;
     emailsToDelete.push(instructorEmail);
     await request(app).post("/api/auth/register").send({
@@ -57,7 +41,7 @@ describe("Courses API", () => {
       .send({ email: instructorEmail, password: testPassword });
     instructorToken = instructorLogin.body.token;
 
-    // 3. Student user
+    // 2. Student user
     const studentEmail = `student_${Date.now()}@test.com`;
     emailsToDelete.push(studentEmail);
     await request(app).post("/api/auth/register").send({
@@ -77,7 +61,6 @@ describe("Courses API", () => {
   describe("GET /api/courses (Public)", () => {
     it("should return 200 and paginated courses", async () => {
       const res = await request(app).get("/api/courses?page=1&limit=5");
-
       expect(res.status).toBe(200);
       expect(res.body).toHaveProperty("success", true);
       expect(res.body).toHaveProperty("data");
@@ -87,7 +70,6 @@ describe("Courses API", () => {
 
     it("should use default pagination values", async () => {
       const res = await request(app).get("/api/courses");
-
       expect(res.status).toBe(200);
       expect(res.body.pagination).toHaveProperty("currentPage", 1);
       expect(res.body.pagination).toHaveProperty("itemsPerPage", 10);
@@ -95,25 +77,6 @@ describe("Courses API", () => {
   });
 
   describe("POST /api/courses (Create)", () => {
-    const newCourse = {
-      title: "Test Course",
-      description: "This is a test course description",
-      maxCapacity: 10,
-      price: 49.99,
-    };
-
-    it("should create a course as admin", async () => {
-      const res = await request(app)
-        .post("/api/courses")
-        .set("Authorization", `Bearer ${adminToken}`)
-        .send(newCourse);
-
-      expect(res.status).toBe(201);
-      expect(res.body).toHaveProperty("_id");
-      expect(res.body).toHaveProperty("title", newCourse.title);
-      createdCourseId = res.body._id; // Save for later tests
-    });
-
     it("should create a course as instructor", async () => {
       const res = await request(app)
         .post("/api/courses")
@@ -127,6 +90,7 @@ describe("Courses API", () => {
 
       expect(res.status).toBe(201);
       expect(res.body).toHaveProperty("_id");
+      createdCourseId = res.body._id; // Save for later tests
       courseTitlesToDelete.push(res.body.title);
     });
 
@@ -134,7 +98,12 @@ describe("Courses API", () => {
       const res = await request(app)
         .post("/api/courses")
         .set("Authorization", `Bearer ${studentToken}`)
-        .send(newCourse);
+        .send({
+          title: "Student Course",
+          description: "Created by student",
+          maxCapacity: 15,
+          price: 29.99,
+        });
 
       expect(res.status).toBe(403);
       expect(res.body).toHaveProperty("success", false);
@@ -143,7 +112,7 @@ describe("Courses API", () => {
     it("should return 400 if validation fails", async () => {
       const res = await request(app)
         .post("/api/courses")
-        .set("Authorization", `Bearer ${adminToken}`)
+        .set("Authorization", `Bearer ${instructorToken}`)
         .send({ title: "123" }); // Too short
 
       expect(res.status).toBe(400);
@@ -153,10 +122,10 @@ describe("Courses API", () => {
   });
 
   describe("PUT /api/courses/:courseId (Update)", () => {
-    it("should update course as admin", async () => {
+    it("should update course as instructor (owner)", async () => {
       const res = await request(app)
         .put(`/api/courses/${createdCourseId}`)
-        .set("Authorization", `Bearer ${adminToken}`)
+        .set("Authorization", `Bearer ${instructorToken}`)
         .send({ title: "Updated Title", price: 99.99 });
 
       expect(res.status).toBe(200);
@@ -168,18 +137,27 @@ describe("Courses API", () => {
       const fakeId = "507f1f77bcf86cd799439011";
       const res = await request(app)
         .put(`/api/courses/${fakeId}`)
-        .set("Authorization", `Bearer ${adminToken}`)
+        .set("Authorization", `Bearer ${instructorToken}`)
         .send({ title: "Ghost" });
 
       expect(res.status).toBe(404);
     });
+
+    it("should return 403 if student tries to update", async () => {
+      const res = await request(app)
+        .put(`/api/courses/${createdCourseId}`)
+        .set("Authorization", `Bearer ${studentToken}`)
+        .send({ title: "Hacked!" });
+
+      expect(res.status).toBe(403);
+    });
   });
 
   describe("DELETE /api/courses/:courseId", () => {
-    it("should delete course as admin", async () => {
+    it("should delete course as instructor (owner)", async () => {
       const res = await request(app)
         .delete(`/api/courses/${createdCourseId}`)
-        .set("Authorization", `Bearer ${adminToken}`);
+        .set("Authorization", `Bearer ${instructorToken}`);
 
       expect(res.status).toBe(200);
       expect(res.body).toHaveProperty("message", "Course Deleted");
@@ -188,13 +166,36 @@ describe("Courses API", () => {
     it("should return 404 for already deleted course", async () => {
       const res = await request(app)
         .delete(`/api/courses/${createdCourseId}`)
-        .set("Authorization", `Bearer ${adminToken}`);
+        .set("Authorization", `Bearer ${instructorToken}`);
 
       expect(res.status).toBe(404);
     });
+
+    it("should return 403 if student tries to delete", async () => {
+      // Create a new course first (instructor)
+      const newCourse = {
+        title: "Delete Test",
+        description: "Testing delete",
+        maxCapacity: 5,
+        price: 10,
+      };
+      const createRes = await request(app)
+        .post("/api/courses")
+        .set("Authorization", `Bearer ${instructorToken}`)
+        .send(newCourse);
+      const tempCourseId = createRes.body._id;
+      courseTitlesToDelete.push("Delete Test");
+
+      // Student tries to delete
+      const res = await request(app)
+        .delete(`/api/courses/${tempCourseId}`)
+        .set("Authorization", `Bearer ${studentToken}`);
+
+      expect(res.status).toBe(403);
+    });
   });
 
-  // Cleanup: Delete all test users
+  // Cleanup: Delete test users and courses
   afterAll(async () => {
     if (emailsToDelete.length > 0) {
       await User.deleteMany({ email: { $in: emailsToDelete } });

@@ -20,7 +20,6 @@ afterAll(async () => {
 
 describe("Enrollments API", () => {
   const emailsToDelete: string[] = [];
-  let adminToken: string;
   let instructorToken: string;
   let studentToken: string;
   let student2Token: string;
@@ -28,21 +27,7 @@ describe("Enrollments API", () => {
   const testPassword = "Test123.";
 
   beforeAll(async () => {
-    // 1. Admin
-    const adminEmail = `admin_enroll_${Date.now()}@test.com`;
-    emailsToDelete.push(adminEmail);
-    await request(app).post("/api/auth/register").send({
-      name: "Admin Enroll",
-      email: adminEmail,
-      password: testPassword,
-      role: "admin",
-    });
-    const adminLogin = await request(app)
-      .post("/api/auth/login")
-      .send({ email: adminEmail, password: testPassword });
-    adminToken = adminLogin.body.token;
-
-    // 2. Instructor
+    // 1. Instructor
     const instructorEmail = `instructor_enroll_${Date.now()}@test.com`;
     emailsToDelete.push(instructorEmail);
     await request(app).post("/api/auth/register").send({
@@ -56,7 +41,7 @@ describe("Enrollments API", () => {
       .send({ email: instructorEmail, password: testPassword });
     instructorToken = instructorLogin.body.token;
 
-    // 3. Student 1
+    // 2. Student 1
     const studentEmail = `student_enroll_${Date.now()}@test.com`;
     emailsToDelete.push(studentEmail);
     await request(app).post("/api/auth/register").send({
@@ -70,7 +55,7 @@ describe("Enrollments API", () => {
       .send({ email: studentEmail, password: testPassword });
     studentToken = studentLogin.body.token;
 
-    // 4. Student 2 (for full capacity test)
+    // 3. Student 2 (for full capacity test)
     const student2Email = `student2_enroll_${Date.now()}@test.com`;
     emailsToDelete.push(student2Email);
     await request(app).post("/api/auth/register").send({
@@ -84,7 +69,7 @@ describe("Enrollments API", () => {
       .send({ email: student2Email, password: testPassword });
     student2Token = student2Login.body.token;
 
-    // 5. Create a course (as instructor) with maxCapacity = 2
+    // 4. Create a course (as instructor) with maxCapacity = 2
     const courseRes = await request(app)
       .post("/api/courses")
       .set("Authorization", `Bearer ${instructorToken}`)
@@ -127,16 +112,6 @@ describe("Enrollments API", () => {
 
       expect(res.status).toBe(400);
       expect(res.body.message).toContain("Instructor can't enrolled");
-    });
-
-    it("should return 400 if admin tries to enroll", async () => {
-      const res = await request(app)
-        .post(`/api/enroll/${courseId}`)
-        .set("Authorization", `Bearer ${adminToken}`)
-        .send();
-
-      expect(res.status).toBe(400);
-      expect(res.body.message).toContain("Admin can't enrolled");
     });
 
     it("should return 400 if course is full", async () => {
@@ -214,16 +189,6 @@ describe("Enrollments API", () => {
       expect(res.body[0].studentId).toHaveProperty("email");
     });
 
-    it("should return students for admin", async () => {
-      const res = await request(app)
-        .get(`/api/course/${courseId}/students`)
-        .set("Authorization", `Bearer ${adminToken}`)
-        .send();
-
-      expect(res.status).toBe(200);
-      expect(Array.isArray(res.body)).toBe(true);
-    });
-
     it("should return 403 if student tries to view", async () => {
       const res = await request(app)
         .get(`/api/course/${courseId}/students`)
@@ -234,7 +199,7 @@ describe("Enrollments API", () => {
     });
   });
 
-  // Delete all test users, course, and enrollments
+  // Cleanup: Delete all test users, course, and enrollments
   afterAll(async () => {
     // Delete enrollments first
     await Enrollment.deleteMany({ courseId: courseId });

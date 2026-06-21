@@ -3,6 +3,7 @@ import authController from "../controllers/authController.js";
 import { validate } from "../middlewares/validate.js";
 import { loginSchema, registerSchema } from "../validations/authValidation.js";
 import { authLimiter } from "../middlewares/rateLimiter.js";
+import { RequestHandler } from "express";
 
 const authRouter = express.Router();
 
@@ -10,7 +11,7 @@ const authRouter = express.Router();
  * @swagger
  * /auth/register:
  *   post:
- *     summary: Register a new user (student, instructor, or admin)
+ *     summary: Register a new user (student or instructor)
  *     tags: [Authentication]
  *     requestBody:
  *       required: true
@@ -23,7 +24,7 @@ const authRouter = express.Router();
  *               name: { type: string, example: "Muhammad Munib Danish" }
  *               email: { type: string, example: "munib@example.com" }
  *               password: { type: string, format: password, example: "Danish9." }
- *               role: { type: string, enum: ["student", "instructor", "admin"], default: "student" }
+ *               role: { type: string, enum: ["student", "instructor"], default: "student" }
  *     responses:
  *       201:
  *         description: User created successfully (password hidden)
@@ -41,7 +42,7 @@ const authRouter = express.Router();
  */
 authRouter.post(
   "/auth/register",
-  authLimiter,
+  authLimiter as RequestHandler,
   validate(registerSchema),
   authController.postRegister,
 );
@@ -85,7 +86,7 @@ authRouter.post(
  */
 authRouter.post(
   "/auth/login",
-  authLimiter,
+  authLimiter as RequestHandler,
   validate(loginSchema),
   authController.postLogin,
 );

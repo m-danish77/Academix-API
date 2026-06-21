@@ -19,7 +19,7 @@ export const registerSchema = z.object({
         /[^A-Za-z0-9]/,
         "Password must contain at least one special character (e.g., !, @, #, $, %)",
       ),
-    role: z.enum(["student", "instructor", "admin"]).default("student"),
+    role: z.enum(["student", "instructor"]).default("student"),
   }),
 });
 

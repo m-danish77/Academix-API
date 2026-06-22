@@ -6,6 +6,7 @@ export interface IUser extends Document {
   email: string;
   password?: string;
   role: "student" | "instructor" | "admin";
+  isVerified: boolean;
 }
 
 const userSchema = new mongoose.Schema(
@@ -29,6 +30,10 @@ const userSchema = new mongoose.Schema(
       required: true,
       enum: ["student", "instructor", "admin"],
       default: "student",
+    },
+    isVerified: {
+      type: Boolean,
+      default: false,
     },
   },
   { timestamps: true },

@@ -31,7 +31,7 @@ const options = {
   definition: {
     openapi: "3.0.0",
     info: {
-      title: "Course Management API",
+      title: "Academix: Course Management Platform",
       version: "1.0.0",
       description: "API for courses, enrollments, and authentication",
     },

@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 import User from "../models/User.js";
+import { config } from "../configs/validateEnv.js";
 
 interface MyToken {
   userId: string;
@@ -31,10 +32,7 @@ const protect = async (req: Request, res: Response, next: NextFunction) => {
 
     // 3. Verify the token
 
-    const decoded = jwt.verify(
-      token,
-      process.env.JWT_SECRET as string,
-    ) as MyToken;
+    const decoded = jwt.verify(token, config.JWT_SECRET as string) as MyToken;
 
     // 4. Check if the user still exists in the database
     const currentUser = await User.findById(decoded.userId);

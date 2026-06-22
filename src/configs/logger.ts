@@ -1,7 +1,7 @@
 import winston from "winston";
 import path from "path";
 import fs from "fs";
-
+import { config } from "./validateEnv.js";
 // 1. Create a "logs" folder if it doesn't exist
 const logDir = "logs";
 if (!fs.existsSync(logDir)) {
@@ -18,7 +18,7 @@ const logFormat = winston.format.combine(
 
 // 3. Create the logger
 const logger = winston.createLogger({
-  level: process.env.NODE_ENV === "production" ? "info" : "debug", // In dev, log everything. In prod, log only info and above.
+  level: config.NODE_ENV === "production" ? "info" : "debug", // In dev, log everything. In prod, log only info and above.
   format: logFormat,
   transports: [
     // Write all logs to combined.log
@@ -34,7 +34,7 @@ const logger = winston.createLogger({
 });
 
 // 4. In development, also print logs to the console with colors. Inside the code block, Winston dynamically adds a new output destination: your terminal console screen.
-if (process.env.NODE_ENV !== "production") {
+if (config.NODE_ENV !== "production") {
   logger.add(
     new winston.transports.Console({
       format: winston.format.combine(

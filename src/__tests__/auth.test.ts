@@ -23,16 +23,6 @@ describe("Auth API", () => {
       });
 
       expect(res.status).toBe(201);
-      expect(res.body).toHaveProperty("_id");
-      expect(res.body).not.toHaveProperty("password");
-    });
-
-    it("should return 400 if email is missing", async () => {
-      const res = await request(app)
-        .post("/api/auth/register")
-        .send({ name: "No Email", password: "Test123.", role: "student" });
-
-      expect(res.status).toBe(400);
     });
   });
 

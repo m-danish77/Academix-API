@@ -1,9 +1,9 @@
 # Academix — Course & Enrollment Management Platform
 
 [![Node.js](https://img.shields.io/badge/Node.js-18.x-339933?logo=node.js&logoColor=white)](https://nodejs.org/)
+[![Express](https://img.shields.io/badge/Express-4.x-000000?logo=express&logoColor=white)](https://expressjs.com/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![MongoDB](https://img.shields.io/badge/MongoDB-Atlas-47A248?logo=mongodb&logoColor=white)](https://www.mongodb.com/atlas)
-[![Express](https://img.shields.io/badge/Express-4.x-000000?logo=express&logoColor=white)](https://expressjs.com/)
 [![Vitest](https://img.shields.io/badge/Vitest-24%2B%20tests-6E9F18?logo=vitest&logoColor=white)](https://vitest.dev/)
 [![Swagger](https://img.shields.io/badge/Swagger-OpenAPI%203.0-85EA2D?logo=swagger&logoColor=black)](https://swagger.io/)
 
@@ -49,9 +49,9 @@ A production-ready RESTful API for an online learning platform — featuring JWT
 
 | Layer | Technology |
 |---|---|
-| Runtime | Node.js 18+, TypeScript 5 |
-| Framework | Express 4 |
-| Database | MongoDB Atlas + Mongoose 7 |
+| Runtime | Node.js 18+, TypeScript 6 |
+| Framework | Express 5 |
+| Database | MongoDB Atlas + Mongoose |
 | Auth | jsonwebtoken, bcrypt |
 | Validation | Zod |
 | Security | Helmet, CORS, express-rate-limit |
@@ -152,7 +152,7 @@ curl -X POST http://localhost:3000/api/courses \
 npm test
 ```
 
-24+ integration tests via Vitest + Supertest. Email verification is auto-bypassed in test mode.
+20+ integration tests via Vitest + Supertest. Email verification is auto-bypassed in test mode.
 
 | Suite | Coverage |
 |---|---|
@@ -164,11 +164,7 @@ npm test
 
 ## Database Seeding
 
-```bash
-npm run seed
-```
-
-Seeds **10 users** (2 admins, 3 instructors, 5 students), **9 courses**, and **20+ enrollments**.
+Seeds **10 users** (2 admins, 3 instructors, 5 students), **9 courses**, and **10+ enrollments**.
 
 | Role | Email | Password |
 |---|---|---|

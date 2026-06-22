@@ -5,7 +5,14 @@ info:
 
 http:
   method: GET
-  url: "{{base_url}}/api/courses"
+  url: "{{base_url}}/api/courses?page=1&limit=5"
+  params:
+    - name: page
+      value: "1"
+      type: query
+    - name: limit
+      value: "5"
+      type: query
   auth: inherit
 
 settings:

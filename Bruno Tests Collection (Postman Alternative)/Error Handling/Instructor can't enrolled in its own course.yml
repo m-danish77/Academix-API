@@ -1,7 +1,7 @@
 info:
   name: Instructor can't enrolled in its own course
   type: http
-  seq: 3
+  seq: 2
 
 http:
   method: POST

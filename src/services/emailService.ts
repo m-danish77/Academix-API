@@ -5,12 +5,13 @@ import { config } from "../configs/validateEnv.js";
 export const transporter = nodemailer.createTransport({
   host: config.EMAIL_HOST,
   port: Number(config.EMAIL_PORT),
-  secure: false, // true for 465, false for 587
+  secure: true, // true for 465, false for 587
   auth: {
     user: config.EMAIL_USER,
     pass: config.EMAIL_PASS,
   },
-});
+  family: 4,
+} as any);
 
 // Send verification email
 export const sendVerificationEmail = async (email: string, token: string) => {

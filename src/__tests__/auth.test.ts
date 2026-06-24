@@ -3,6 +3,7 @@ import app from "../app.js";
 import User from "../models/User.js";
 import mongoose from "mongoose";
 import { config } from "../configs/validateEnv.js";
+import { describe, it, expect, beforeAll, afterAll } from "vitest";
 
 // Connect to database BEFORE all tests
 beforeAll(async () => {

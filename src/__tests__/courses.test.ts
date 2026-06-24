@@ -4,6 +4,7 @@ import User from "../models/User.js";
 import Course from "../models/Course.js";
 import mongoose from "mongoose";
 import { config } from "../configs/validateEnv.js";
+import { describe, it, expect, beforeAll, afterAll } from "vitest";
 
 // Connect to database before tests
 beforeAll(async () => {

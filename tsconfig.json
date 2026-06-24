@@ -7,8 +7,7 @@
     // Environment Settings
     "module": "nodenext",
     "target": "esnext",
-    // Need to add below line to use vitest globals like `describe`, `it`, `expect` without importing them in every test file
-    "types": ["vitest/globals"],
+    "types": [],
 
     // Other Outputs
     "sourceMap": true,

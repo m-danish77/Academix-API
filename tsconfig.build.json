@@ -1,8 +1,6 @@
 {
   "extends": "./tsconfig.json",
-  "compilerOptions": {
-    "types": [], // ← Ignore test types
-  },
+  "compilerOptions": {},
   "exclude": [
     "node_modules",
     "dist",

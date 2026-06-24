@@ -14,7 +14,7 @@ const getServers = () => {
 
   if (config.DEPLOYED_URL) {
     servers.push({
-      url: config.DEPLOYED_URL,
+      url: `${config.DEPLOYED_URL}/api`,
       description: isProduction ? "Production server" : "Deployed server",
     });
   }

@@ -30,7 +30,11 @@ const port = config.PORT;
 app.use(helmet());
 
 // Only request comming from these urls are allowed
-const allowedOrigins = ["http://localhost:3000", "https://yourfrontend.com"];
+const allowedOrigins = [
+  "http://localhost:3000",
+  "https://yourfrontend.com",
+  "https://academix-api-krtn.onrender.com",
+];
 
 app.use(
   cors({

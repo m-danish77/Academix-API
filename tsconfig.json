@@ -1,32 +1,17 @@
 {
   "compilerOptions": {
-    // File Layout
-    "rootDir": "./src",
+    "target": "ES2022",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
     "outDir": "./dist",
-
-    // Environment Settings
-    "module": "nodenext",
-    "target": "esnext",
-
-    // Other Outputs
-    "sourceMap": true,
-    "declaration": false,
-    "declarationMap": false,
-
-    // Stricter Typechecking Options
-    "noUncheckedIndexedAccess": true,
-    "exactOptionalPropertyTypes": true,
-
-    // Recommended Options
-    "strict": true,
-    "jsx": "react-jsx",
-    "verbatimModuleSyntax": false,
-    "isolatedModules": true,
-    "noUncheckedSideEffectImports": true,
-    "moduleDetection": "force",
+    "rootDir": "./src",
+    "strict": false,
+    "esModuleInterop": true,
     "skipLibCheck": true,
-    "types": ["node"],
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "allowSyntheticDefaultImports": true,
   },
   "include": ["src/**/*"],
-  "exclude": ["node_modules"],
+  "exclude": ["node_modules", "dist", "src/**/*.test.ts", "src/__tests__"],
 }

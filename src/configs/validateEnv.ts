@@ -15,15 +15,14 @@ const envSchema = z.object({
   // --- OPTIONAL with defaults ---
   PORT: z.string().default("3000"),
   DEPLOYED_URL: z.string().optional(),
-
-  // --- Email Configuration ---
-  EMAIL_HOST: z.string().default("smtp.gmail.com"),
-  EMAIL_PORT: z.string().default("587"),
-  EMAIL_USER: z.string().min(1, "EMAIL_USER is required"),
-  EMAIL_PASS: z.string().min(1, "EMAIL_PASS is required"),
-  EMAIL_FROM: z.string().min(1, "EMAIL_FROM is required"),
-  VERIFICATION_TOKEN_EXPIRY: z.string().default("1h"),
   BASE_URL: z.string().default("http://localhost:3000"),
+  VERIFICATION_TOKEN_EXPIRY: z.string().default("1h"),
+
+  // --- 🔑 Gmail API Configuration (NEW) ---
+  GMAIL_CLIENT_ID: z.string().min(1, "GMAIL_CLIENT_ID is required"),
+  GMAIL_CLIENT_SECRET: z.string().min(1, "GMAIL_CLIENT_SECRET is required"),
+  GMAIL_REFRESH_TOKEN: z.string().min(1, "GMAIL_REFRESH_TOKEN is required"),
+  GMAIL_USER: z.email({ error: "Valid GMAIL_USER is required" }),
 });
 
 // 3. Check if the rules are followed

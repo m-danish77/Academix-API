@@ -85,63 +85,6 @@ authRouter.post(
   authController.postRegister,
 );
 
-/**
- * @swagger
- * /auth/verify-email:
- *   get:
- *     summary: Verify email address with token
- *     tags: [Authentication]
- *     description: |
- *       Verify a user's email address using the token sent in the verification email.
- *       The token expires after 1 hour.
- *     parameters:
- *       - in: query
- *         name: token
- *         required: true
- *         schema:
- *           type: string
- *         description: The JWT verification token from the email link
- *     responses:
- *       200:
- *         description: Email verified successfully
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 status:
- *                   type: string
- *                   example: "success"
- *                 message:
- *                   type: string
- *                   example: "Email verified successfully. You can now log in."
- *       400:
- *         description: Invalid, expired, or missing token
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 status:
- *                   type: string
- *                   example: "error"
- *                 message:
- *                   type: string
- *                   example: "Verification token has expired. Please register again."
- *       404:
- *         description: User not found
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 status:
- *                   type: string
- *                   example: "error"
- *                 message:
- *                   type: string
- *                   example: "User not found."
- */
 authRouter.get("/auth/verify-email", authController.verifyEmail);
 
 /**
